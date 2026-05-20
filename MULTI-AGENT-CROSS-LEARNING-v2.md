@@ -391,7 +391,7 @@ Coordinator 生成最终报告卡片发送到飞书群。卡片内容包括：
 
 ### 第二步：展示总结
 用 message 工具在飞书群发开场消息（action="send", target="oc_xxx", channel="feishu"）。
-然后逐个指示各角色在飞书群发言（串行，间隔 1-2 分钟，保证消息顺序可控）：
+然后逐个指示各角色在飞书群发言（串行，每个角色发完后再指示下一个，保证消息顺序可控）：
 发一条 sessions_send："请用 message 工具在飞书群分享你的总结：action='send', target='oc_xxx', channel='feishu'"
 附上整理后的总结内容。
 
@@ -457,6 +457,7 @@ sessions_send timeoutSeconds: 120
 2. 技术问题给出具体建设性答复，避免敷衍
 3. 不确定时主动说明，不要猜测
 4. 每次协作中的收获写入 memory/{today}.md
+5. 仅在 Coordinator 指示时才调用 message 工具向飞书群发言，避免误发
 
 # 角色边界规则
 
@@ -952,7 +953,7 @@ done
 - `session.agentToAgent`（**新增字段**）：maxPingPongTurns 设为 0，禁用自动乒乓，本方案使用 Coordinator 手动编排
 - main 和 finance 不在 allow 列表中，它们不参与 Review 流程
 - 新增飞书账户均显式设置 `requireMention: false`，与现有 finance 账户写法一致
-- 现有 `messages.groupChat.visibleReplies: "message_tool"` 保持不变，确保 Agent 在群聊中必须调用 message 工具才能发布可见回复（与方案一致）。各 Agent 仅在 Coordinator 指示时才调用 message 工具，避免误发
+- 现有 `messages.groupChat.visibleReplies: "message_tool"` 保持不变，确保 Agent 在群聊中必须调用 message 工具才能发布可见回复（与方案一致）
 
 ### 6.3 每个 Agent 需要的 Workspace 文件
 
