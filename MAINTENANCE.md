@@ -36,7 +36,8 @@
 │   │   └── sessions/          # 会话数据
 │   └── finance/
 │       ├── agent/             # finance agent 配置
-│       │   └── auth-profiles.json
+│       │   ├── auth-profiles.json
+│       │   └── auth-state.json
 │       └── sessions/
 ├── workspace/                 # main agent (程一) workspace
 │   ├── IDENTITY.md, SOUL.md, TOOLS.md, USER.md, AGENTS.md, ...
@@ -191,6 +192,8 @@
 | bind | loopback | 仅监听本地回环 |
 | tailscale.mode | off | Tailscale 关闭 |
 | controlUi.allowInsecureAuth | true | 允许非安全认证 |
+| controlUi.allowedOrigins | ["https://openclaw.huiyiyou.cloud"] | 允许的 UI 来源域名 |
+| trustedProxies | ["127.0.0.1/32"] | 可信代理 IP |
 | nodes.denyCommands | [camera.*, screen.record, ...] | 节点禁止命令列表 |
 
 ### 2.2 models.providers（模型配置）
@@ -229,6 +232,8 @@ API 密钥实际存储在 `openclaw.json` 的 `models.providers.<provider>.apiKe
 | TOOLS.md | 可用工具描述 |
 | USER.md | 用户信息 |
 | AGENTS.md | Agent 运行手册（行为准则、记忆规则、工作流） |
+| MEMORY.md | 长期记忆（仅主会话加载） |
+| DREAMS.md | 梦境/记忆文件 |
 | BOOTSTRAP.md | 引导流程配置 |
 | HEARTBEAT.md | 心跳/在线状态配置 |
 
@@ -268,7 +273,7 @@ API 密钥实际存储在 `openclaw.json` 的 `models.providers.<provider>.apiKe
 
 ### 4.3 deepseek 模型
 
-仅程一（main）配置，1 个模型：
+provider 定义在 openclaw.json 共享配置中，两个 agent 均可使用，但仅程一将其设为默认模型：
 
 | 模型 ID | 上下文 | 输出 | 输入 |
 |---------|--------|------|------|
@@ -301,7 +306,7 @@ API 密钥实际存储在 `openclaw.json` 的 `models.providers.<provider>.apiKe
 |------|---|
 | 服务名 | openclaw-gateway.service |
 | 服务类型 | systemd user service |
-| 服务版本 | 2026.5.6（systemd 文件） |
+| 服务版本 | 2026.5.6（systemd 文件，升级后可能滞后） |
 | 安装版本 | 2026.5.18 |
 | 端口 | 18789 |
 | 执行命令 | node /usr/lib/node_modules/openclaw/dist/index.js gateway --port 18789 |
