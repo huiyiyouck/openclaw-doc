@@ -411,6 +411,8 @@ systemctl --user daemon-reload
 | volcengine | 火山引擎集成（模型 provider） |
 | tavily | 网络搜索（`tools.web.search.provider`） |
 | openclaw-lark | 飞书官方插件（通道 + 工具） |
+| memory-core | 记忆核心（含 dreaming 梦境整理） |
+| memory-wiki | 记忆 wiki 系统 |
 
 ### 7.2 认证配置
 
@@ -462,7 +464,35 @@ clawhub search <query>
 
 ## 9. 记忆系统
 
-当前未配置独立记忆系统（无 memory-core 插件，无 SQLite 数据库）。
+### 9.1 已启用插件
+
+| 插件 | 说明 |
+|------|------|
+| memory-core | 记忆核心，含 dreaming（梦境整理）功能 |
+| memory-wiki | 记忆 wiki 系统 |
+
+### 9.2 Dreaming 配置
+
+```json
+{
+  "dreaming": {
+    "enabled": true,
+    "frequency": "0 3 * * *",
+    "timezone": "Asia/Shanghai"
+  }
+}
+```
+
+每天凌晨 3:00（Asia/Shanghai）自动触发，生成 light（浅层）和 rem（深层）梦境，整理对话记忆。
+
+### 9.3 数据存储
+
+| 文件 | 说明 |
+|------|------|
+| memory/main.sqlite | 程一的记忆数据库 |
+| memory/finance.sqlite | 程二的记忆数据库 |
+| workspace/memory/ | 程一的 workspace 记忆文件 |
+| workspace-finance/memory/ | 程二的 workspace 记忆文件 |
 
 ---
 
