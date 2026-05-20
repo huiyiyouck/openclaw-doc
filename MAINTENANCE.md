@@ -2,7 +2,7 @@
 
 > 本手册面向 AI agent 和人工维护者，提供 OpenClaw 部署的架构、配置和运维参考。
 > 官方文档：https://docs.openclaw.ai/ | 完整索引：https://docs.openclaw.ai/llms.txt
-> 最后更新：2026-05-19
+> 最后更新：2026-05-20
 
 ---
 
