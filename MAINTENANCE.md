@@ -31,7 +31,7 @@
 ├── agents/                    # Agent 定义目录
 │   ├── main/
 │   │   ├── agent/             # main agent 配置
-│   │   │   ├── auth-profiles.json  # API 密钥
+│   │   │   ├── auth-profiles.json  # API 密钥（当前为空）
 │   │   │   └── auth-state.json     # 认证状态
 │   │   └── sessions/          # 会话数据
 │   └── finance/
@@ -48,6 +48,15 @@
 │   └── .openclaw/
 ├── identity/                  # 设备密钥
 │   └── device.json
+├── memory/                    # 记忆数据库
+│   ├── main.sqlite            # 程一记忆
+│   └── finance.sqlite         # 程二记忆
+├── wiki/                      # memory-wiki 插件数据
+│   └── main/
+├── credentials/               # 飞书配对数据
+│   ├── feishu-pairing.json
+│   ├── feishu-default-allowFrom.json
+│   └── feishu-finance-allowFrom.json
 ├── logs/                      # 运行日志
 ├── plugins/                   # 插件数据
 ├── extensions/                # 外部插件安装目录
@@ -74,12 +83,33 @@
 
 ```json
 {
+  "models": {
+    "providers": {
+      "volcengine-plan": { "...": "见第 4 章" },
+      "deepseek": { "...": "见第 4 章" }
+    }
+  },
   "agents": {
     "defaults": {
       "workspace": "/root/.openclaw/workspace",
-      "models": { "volcengine-plan/ark-code-latest": {} },
+      "models": {
+        "volcengine-plan/ark-code-latest": {},
+        "volcengine-plan/doubao-seed-code": {},
+        "volcengine-plan/glm-5.1": {},
+        "volcengine-plan/deepseek-v3.2": {},
+        "volcengine-plan/doubao-seed-2.0-code": {},
+        "volcengine-plan/doubao-seed-2.0-pro": {},
+        "volcengine-plan/doubao-seed-2.0-lite": {},
+        "volcengine-plan/minimax-latest": {},
+        "volcengine-plan/kimi-k2.6": {},
+        "deepseek/deepseek-v4-pro": {}
+      },
       "model": { "primary": "volcengine-plan/ark-code-latest" }
-    }
+    },
+    "list": [
+      { "id": "main", "model": "deepseek/deepseek-v4-pro", "..." : "..." },
+      { "id": "finance", "model": "volcengine-plan/glm-5.1", "...": "..." }
+    ]
   },
   "gateway": {
     "mode": "local",
@@ -89,7 +119,7 @@
   },
   "session": { "dmScope": "per-channel-peer" },
   "tools": {
-    "profile": "coding",
+    "profile": "full",
     "web": { "search": { "provider": "tavily", "enabled": true } }
   },
   "channels": {
@@ -100,11 +130,7 @@
       "requireMention": false,
       "streaming": true,
       "accounts": {
-        "default": {
-          "enabled": true, "name": "程一-秘书",
-          "appId": "cli_a932a2224f39dbce", "appSecret": "<secret>",
-          "domain": "feishu", "connectionMode": "websocket", "streaming": true
-        },
+        "default": {},
         "finance": {
           "enabled": true, "name": "程二-财务助手",
           "appId": "cli_a9340f9ff178dbc6", "appSecret": "<secret>",
@@ -121,7 +147,10 @@
     "entries": {
       "volcengine": { "enabled": true },
       "tavily": { "enabled": true },
-      "openclaw-lark": { "enabled": true }
+      "openclaw-lark": { "enabled": true },
+      "deepseek": { "enabled": true },
+      "memory-core": { "enabled": true, "config": { "dreaming": { "enabled": true, "frequency": "0 3 * * *", "timezone": "Asia/Shanghai" } } },
+      "memory-wiki": { "enabled": true }
     }
   },
   "auth": {
@@ -135,6 +164,8 @@
 }
 ```
 
+> 注：`channels.feishu.accounts.default` 为空对象 `{}`，继承上层 feishu 的 appId/appSecret 配置。API 密钥存储在 `models.providers.<provider>.apiKey` 字段中。
+
 **主要字段说明：**
 
 | 字段 | 说明 |
@@ -144,7 +175,7 @@
 | `channels.feishu` | 飞书通道配置（appId、WebSocket 连接） |
 | `bindings` | 路由绑定（通道 → agent 映射） |
 | `session.dmScope` | 会话作用域：per-channel-peer（每通道每对等方独立会话） |
-| `tools.profile` | 工具配置集：coding |
+| `tools.profile` | 工具配置集：full |
 | `tools.web.search` | 网络搜索：tavily |
 | `plugins.entries` | 插件开关 |
 | `auth.profiles` | 认证配置（API key 模式） |
@@ -166,15 +197,15 @@
 
 Provider 和模型定义在 `openclaw.json` 的 `models.providers` 中，所有 agent 共用一份。不再使用 agents 目录下的独立 `models.json` 文件。详见第 4 章。
 
-### 2.3 agents/main/agent/auth-profiles.json（认证配置）
+### 2.3 auth-profiles.json（认证配置）
+
+两个 agent 的 `auth-profiles.json` 当前均为空：
 
 ```json
-{
-  "profiles": {
-    "volcengine:default": { "type": "api_key", "provider": "volcengine", "key": "<key>" }
-  }
-}
+{ "version": 1, "profiles": {} }
 ```
+
+API 密钥实际存储在 `openclaw.json` 的 `models.providers.<provider>.apiKey` 字段中（volcengine-plan 和 deepseek 各有一个 apiKey）。
 
 ---
 
@@ -214,16 +245,14 @@ Provider 和模型定义在 `openclaw.json` 的 `models.providers` 中，所有 
 
 ### 4.1 Provider 总览
 
-两个 agent 各有独立的 `models.json`，当前只保留 2 个 provider：
+所有模型配置统一在 `openclaw.json` 的 `models.providers` 中，所有 agent 共用一份：
 
-| Provider | baseUrl | API 协议 | 程一 (main) | 程二 (finance) |
-|----------|---------|---------|:-----------:|:--------------:|
-| volcengine-plan | https://ark.cn-beijing.volces.com/api/coding/v3 | openai-completions | 9 个 | 6 个 |
-| deepseek | https://api.deepseek.com | openai-completions | 1 个 | 无 |
+| Provider | baseUrl | API 协议 | 模型数 |
+|----------|---------|---------|:------:|
+| volcengine-plan | https://ark.cn-beijing.volces.com/api/coding/v3 | openai-completions | 9 |
+| deepseek | https://api.deepseek.com | openai-completions | 1 |
 
-### 4.2 volcengine-plan 模型
-
-**程一（main）— 9 个模型：**
+### 4.2 volcengine-plan 模型（9 个）
 
 | 模型 ID | 上下文 | 输出 | 输入 |
 |---------|--------|------|------|
@@ -236,17 +265,6 @@ Provider 和模型定义在 `openclaw.json` 的 `models.providers` 中，所有 
 | doubao-seed-2.0-lite | 256K | 128K | text, image |
 | minimax-latest | 200K | 128K | text |
 | kimi-k2.6 | 256K | 32K | text, image |
-
-**程二（finance）— 6 个模型：**
-
-| 模型 ID | 上下文 | 输出 | 输入 |
-|---------|--------|------|------|
-| ark-code-latest | 256K | 4K | text |
-| doubao-seed-code | 256K | 4K | text |
-| glm-4.7 | 200K | 4K | text |
-| kimi-k2-thinking | 256K | 4K | text |
-| kimi-k2.5 | 256K | 4K | text |
-| doubao-seed-code-preview-251028 | 256K | 4K | text |
 
 ### 4.3 deepseek 模型
 
@@ -267,7 +285,9 @@ Provider 和模型定义在 `openclaw.json` 的 `models.providers` 中，所有 
 
 ### 4.5 模型切换方法
 
-1. 编辑 `openclaw.json`，修改 `agents.defaults.model.primary`
+1. 编辑 `openclaw.json`
+   - 全局默认：修改 `agents.defaults.model.primary`
+   - 单个 agent：修改 `agents.list` 中对应 agent 的 `model` 字段
 2. 重启 gateway：`openclaw gateway restart --force`
 3. 验证：`systemctl --user status openclaw-gateway`
 
@@ -281,7 +301,7 @@ Provider 和模型定义在 `openclaw.json` 的 `models.providers` 中，所有 
 |------|---|
 | 服务名 | openclaw-gateway.service |
 | 服务类型 | systemd user service |
-| 服务版本 | 2026.5.18 |
+| 服务版本 | 2026.5.6（systemd 文件） |
 | 安装版本 | 2026.5.18 |
 | 端口 | 18789 |
 | 执行命令 | node /usr/lib/node_modules/openclaw/dist/index.js gateway --port 18789 |
@@ -319,7 +339,7 @@ systemctl --user daemon-reload
 - `HOME=/root`
 - `OPENCLAW_GATEWAY_PORT=18789`
 - `OPENCLAW_SYSTEMD_UNIT=openclaw-gateway.service`
-- `OPENCLAW_SERVICE_VERSION=2026.5.18`
+- `OPENCLAW_SERVICE_VERSION=2026.5.6`
 
 ---
 
@@ -372,14 +392,17 @@ systemctl --user daemon-reload
 | volcengine | 火山引擎集成（模型 provider） |
 | tavily | 网络搜索（`tools.web.search.provider`） |
 | openclaw-lark | 飞书官方插件（通道 + 工具） |
+| deepseek | DeepSeek 模型 provider |
 | memory-core | 记忆核心（含 dreaming 梦境整理） |
 | memory-wiki | 记忆 wiki 系统 |
 
 ### 7.2 认证配置
 
-通过 `auth.profiles` 管理 API 密钥：
-- `volcengine:default` — 火山引擎 API key
-- `xai:default` — xAI API key（在 auth-profiles.json 中）
+API 密钥存储在 `openclaw.json` 的 `models.providers` 中（各 provider 的 `apiKey` 字段）：
+- `volcengine-plan.apiKey` — 火山引擎 API key
+- `deepseek.apiKey` — DeepSeek API key
+
+`agents/*/agent/auth-profiles.json` 当前均为空。`auth.profiles` 中保留 `volcengine:default` 用于兼容。
 
 ---
 
@@ -452,6 +475,7 @@ clawhub search <query>
 |------|------|
 | memory/main.sqlite | 程一的记忆数据库 |
 | memory/finance.sqlite | 程二的记忆数据库 |
+| wiki/main/ | memory-wiki 插件数据 |
 | workspace/memory/ | 程一的 workspace 记忆文件 |
 | workspace-finance/memory/ | 程二的 workspace 记忆文件 |
 
@@ -537,6 +561,9 @@ tar czf /root/openclaw-backup-$(date +%Y%m%d).tar.gz \
   .openclaw/workspace/ \
   .openclaw/workspace-finance/ \
   .openclaw/identity/ \
+  .openclaw/memory/ \
+  .openclaw/wiki/ \
+  .openclaw/credentials/ \
   .openclaw/doc/ \
   .config/systemd/user/openclaw-gateway.service
 ```
@@ -593,7 +620,7 @@ systemctl --user restart openclaw-gateway
 | 症状 | 可能原因 | 解决方案 |
 |------|---------|---------|
 | 429 Too Many Requests | API 限流 | 等待或调整调用频率 |
-| 403 Forbidden | API Key 无效 | 检查 models.json 和 auth-profiles.json 中的 key |
+| 403 Forbidden | API Key 无效 | 检查 openclaw.json 中 models.providers 的 apiKey 字段 |
 | Timeout | 网络问题 | 检查网络连接 |
 | 上下文超限 | 输入超过 contextWindow | 减少输入或切换更大窗口模型 |
 
