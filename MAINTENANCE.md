@@ -217,17 +217,12 @@
 
 ### 4.1 Provider 总览
 
-两个 agent 各有独立的 `models.json`，provider 数量不同：
+两个 agent 各有独立的 `models.json`，当前只保留 2 个 provider：
 
-| Provider | baseUrl | API 协议 | 程一 (main) | 程二 (finance) | 状态 |
-|----------|---------|---------|:-----------:|:--------------:|------|
-| volcengine-plan | https://ark.cn-beijing.volces.com/api/coding/v3 | openai-completions | 9 个 | 6 个 | 在用 |
-| deepseek | https://api.deepseek.com | openai-completions | 1 个 | 无 | 在用（程一默认） |
-| xai | https://api.x.ai/v1 | openai-responses | 14 个 | 14 个 | 待清理 |
-| x-ai | https://api.x.ai/v1 | openai-responses | 14 个 | 14 个 | 待清理（xai 别名） |
-| volcengine | https://ark.cn-beijing.volces.com/api/v3 | openai-completions | 5 个 | 5 个 | 待清理（未使用） |
-
-> 注：xai/x-ai/volcengine 三个 provider 仍存在于 models.json 中但未实际使用，建议清理。
+| Provider | baseUrl | API 协议 | 程一 (main) | 程二 (finance) |
+|----------|---------|---------|:-----------:|:--------------:|
+| volcengine-plan | https://ark.cn-beijing.volces.com/api/coding/v3 | openai-completions | 9 个 | 6 个 |
+| deepseek | https://api.deepseek.com | openai-completions | 1 个 | 无 |
 
 ### 4.2 volcengine-plan 模型
 
@@ -256,40 +251,7 @@
 | kimi-k2.5 | 256K | 4K | text |
 | doubao-seed-code-preview-251028 | 256K | 4K | text |
 
-### 4.3 xai / x-ai 模型（Grok 系列）
-
-两个 provider 模型列表相同，程一和程二共享。
-
-| 模型 ID | 上下文 | 输出 | 推理 | 输入 |
-|---------|--------|------|------|------|
-| grok-3 | 131K | 8K | 否 | text |
-| grok-3-fast | 131K | 8K | 否 | text |
-| grok-3-mini | 131K | 8K | 是 | text |
-| grok-3-mini-fast | 131K | 8K | 是 | text |
-| grok-4.3 | 1M | 64K | 是 | text, image |
-| grok-4 | 256K | 64K | 是 | text |
-| grok-4-0709 | 256K | 64K | 否 | text |
-| grok-4-fast | 2M | 30K | 是 | text, image |
-| grok-4-fast-non-reasoning | 2M | 30K | 否 | text, image |
-| grok-4-1-fast | 2M | 30K | 是 | text, image |
-| grok-4-1-fast-non-reasoning | 2M | 30K | 否 | text, image |
-| grok-4.20-beta-latest-reasoning | 2M | 30K | 是 | text, image |
-| grok-4.20-beta-latest-non-reasoning | 2M | 30K | 否 | text, image |
-| grok-code-fast-1 | 256K | 10K | 是 | text |
-
-### 4.4 volcengine 模型（标准 API）
-
-程一和程二共享，5 个模型：
-
-| 模型 ID | 上下文 | 输出 | 输入 |
-|---------|--------|------|------|
-| doubao-seed-code-preview-251028 | 256K | 4K | text, image |
-| doubao-seed-1-8-251228 | 256K | 4K | text, image |
-| kimi-k2-5-260127 | 256K | 4K | text, image |
-| glm-4-7-251222 | 200K | 4K | text, image |
-| deepseek-v3-2-251201 | 128K | 4K | text, image |
-
-### 4.5 deepseek 模型（官方 API）
+### 4.3 deepseek 模型
 
 仅程一（main）配置，1 个模型：
 
@@ -297,7 +259,7 @@
 |---------|--------|------|------|
 | deepseek-v4-pro | 128K | 32K | text, image |
 
-### 4.6 当前模型分配
+### 4.4 当前模型分配
 
 | Agent | 默认模型 | 配置位置 |
 |-------|---------|---------|
@@ -306,7 +268,7 @@
 
 > 注：`agents.defaults.model.primary` 为 `volcengine-plan/ark-code-latest`，但两个 agent 都在 `agents.list` 中指定了自己的默认模型。
 
-### 4.7 模型切换方法
+### 4.5 模型切换方法
 
 1. 编辑 `openclaw.json`，修改 `agents.defaults.model.primary`
 2. 重启 gateway：`openclaw gateway restart --force`
