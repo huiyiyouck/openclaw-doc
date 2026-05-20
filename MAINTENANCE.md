@@ -228,7 +228,7 @@ API 密钥实际存储在 `openclaw.json` 的 `models.providers.<provider>.apiKe
 | SOUL.md | Agent 性格和行为准则 |
 | TOOLS.md | 可用工具描述 |
 | USER.md | 用户信息 |
-| AGENTS.md | Agent 列表（多 agent 时使用） |
+| AGENTS.md | Agent 运行手册（行为准则、记忆规则、工作流） |
 | BOOTSTRAP.md | 引导流程配置 |
 | HEARTBEAT.md | 心跳/在线状态配置 |
 
