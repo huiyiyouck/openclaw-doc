@@ -185,12 +185,12 @@
 
 ### 3.1 当前 Agent
 
-| ID | 名称 | Emoji | 模型 | Workspace | Agent Dir | 说明 |
-|----|------|-------|------|-----------|-----------|------|
-| main | 程一 | 📋 | volcengine-plan/ark-code-latest | /root/.openclaw/workspace | /root/.openclaw/agents/main/agent | 一人公司秘书 |
-| finance | 程二 | 💰 | volcengine-plan/ark-code-latest | /root/.openclaw/workspace-finance | /root/.openclaw/agents/finance/agent | 财务助手（消费记录） |
+| ID | 名称 | Emoji | 默认模型 | Workspace | Agent Dir | 说明 |
+|----|------|-------|---------|-----------|-----------|------|
+| main | 程一 | 📋 | deepseek/deepseek-v4-pro | /root/.openclaw/workspace | /root/.openclaw/agents/main/agent | 一人公司秘书 |
+| finance | 程二 | 💰 | volcengine-plan/glm-5.1 | /root/.openclaw/workspace-finance | /root/.openclaw/agents/finance/agent | 财务助手（消费记录） |
 
-两个 agent 使用相同的模型 provider，独立的 workspace 和 agent 数据目录。
+> 注：`agents.defaults.model.primary` 为 `volcengine-plan/ark-code-latest`，但两个 agent 各自在 `agents.list` 中覆盖了默认模型。
 
 ### 3.2 Workspace 文件
 
@@ -219,15 +219,15 @@
 
 两个 agent 各有独立的 `models.json`，provider 数量不同：
 
-| Provider | baseUrl | API 协议 | 程一 (main) | 程二 (finance) |
-|----------|---------|---------|:-----------:|:--------------:|
-| volcengine-plan | https://ark.cn-beijing.volces.com/api/coding/v3 | openai-completions | 9 个 | 6 个 |
-| xai | https://api.x.ai/v1 | openai-responses | 14 个 | 14 个 |
-| x-ai | https://api.x.ai/v1 | openai-responses | 14 个 | 14 个 |
-| volcengine | https://ark.cn-beijing.volces.com/api/v3 | openai-completions | 5 个 | 5 个 |
-| deepseek | https://api.deepseek.com | openai-completions | 1 个 | 无 |
+| Provider | baseUrl | API 协议 | 程一 (main) | 程二 (finance) | 状态 |
+|----------|---------|---------|:-----------:|:--------------:|------|
+| volcengine-plan | https://ark.cn-beijing.volces.com/api/coding/v3 | openai-completions | 9 个 | 6 个 | 在用 |
+| deepseek | https://api.deepseek.com | openai-completions | 1 个 | 无 | 在用（程一默认） |
+| xai | https://api.x.ai/v1 | openai-responses | 14 个 | 14 个 | 待清理 |
+| x-ai | https://api.x.ai/v1 | openai-responses | 14 个 | 14 个 | 待清理（xai 别名） |
+| volcengine | https://ark.cn-beijing.volces.com/api/v3 | openai-completions | 5 个 | 5 个 | 待清理（未使用） |
 
-> 注：xai 和 x-ai 是同一 API 的两个别名，模型列表完全相同。
+> 注：xai/x-ai/volcengine 三个 provider 仍存在于 models.json 中但未实际使用，建议清理。
 
 ### 4.2 volcengine-plan 模型
 
@@ -299,10 +299,12 @@
 
 ### 4.6 当前模型分配
 
-| Agent | 默认模型 | 说明 |
-|-------|---------|------|
-| main (程一) | volcengine-plan/ark-code-latest | 继承 agents.defaults |
-| finance (程二) | volcengine-plan/glm-4.7 | 单独配置，覆盖默认值 |
+| Agent | 默认模型 | 配置位置 |
+|-------|---------|---------|
+| main (程一) | deepseek/deepseek-v4-pro | agents.list[0].model 覆盖 defaults |
+| finance (程二) | volcengine-plan/glm-5.1 | agents.list[1].model 覆盖 defaults |
+
+> 注：`agents.defaults.model.primary` 为 `volcengine-plan/ark-code-latest`，但两个 agent 都在 `agents.list` 中指定了自己的默认模型。
 
 ### 4.7 模型切换方法
 
