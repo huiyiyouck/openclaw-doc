@@ -31,13 +31,11 @@
 ├── agents/                    # Agent 定义目录
 │   ├── main/
 │   │   ├── agent/             # main agent 配置
-│   │   │   ├── models.json    # 模型 provider 和模型列表
 │   │   │   ├── auth-profiles.json  # API 密钥
 │   │   │   └── auth-state.json     # 认证状态
 │   │   └── sessions/          # 会话数据
 │   └── finance/
 │       ├── agent/             # finance agent 配置
-│       │   ├── models.json    # 模型配置（继承 main 的）
 │       │   └── auth-profiles.json
 │       └── sessions/
 ├── workspace/                 # main agent (程一) workspace
@@ -164,16 +162,15 @@
 | controlUi.allowInsecureAuth | true | 允许非安全认证 |
 | nodes.denyCommands | [camera.*, screen.record, ...] | 节点禁止命令列表 |
 
-### 2.2 agents/main/agent/models.json（模型配置）
+### 2.2 models.providers（模型配置）
 
-定义了 4 个 provider，详见第 4 章。
+Provider 和模型定义在 `openclaw.json` 的 `models.providers` 中，所有 agent 共用一份。不再使用 agents 目录下的独立 `models.json` 文件。详见第 4 章。
 
 ### 2.3 agents/main/agent/auth-profiles.json（认证配置）
 
 ```json
 {
   "profiles": {
-    "xai:default": { "type": "api_key", "provider": "xai", "key": "<key>" },
     "volcengine:default": { "type": "api_key", "provider": "volcengine", "key": "<key>" }
   }
 }
