@@ -217,19 +217,21 @@
 
 ### 4.1 Provider 总览
 
-在 `agents/main/agent/models.json` 中定义了 5 个 provider：
+两个 agent 各有独立的 `models.json`，provider 数量不同：
 
-| Provider | baseUrl | API 协议 | 说明 |
-|----------|---------|---------|------|
-| volcengine-plan | https://ark.cn-beijing.volces.com/api/coding/v3 | openai-completions | 火山引擎编码计划（9 个模型） |
-| xai | https://api.x.ai/v1 | openai-responses | xAI Grok 系列（14 个模型） |
-| x-ai | https://api.x.ai/v1 | openai-responses | xAI 别名（同 xai，14 个模型） |
-| volcengine | https://ark.cn-beijing.volces.com/api/v3 | openai-completions | 火山引擎标准 API（5 个模型） |
-| deepseek | https://api.deepseek.com | openai-completions | DeepSeek 官方 API（1 个模型） |
+| Provider | baseUrl | API 协议 | 程一 (main) | 程二 (finance) |
+|----------|---------|---------|:-----------:|:--------------:|
+| volcengine-plan | https://ark.cn-beijing.volces.com/api/coding/v3 | openai-completions | 9 个 | 6 个 |
+| xai | https://api.x.ai/v1 | openai-responses | 14 个 | 14 个 |
+| x-ai | https://api.x.ai/v1 | openai-responses | 14 个 | 14 个 |
+| volcengine | https://ark.cn-beijing.volces.com/api/v3 | openai-completions | 5 个 | 5 个 |
+| deepseek | https://api.deepseek.com | openai-completions | 1 个 | 无 |
 
-> 注：程二（finance）的 models.json 缺少 `deepseek` provider，只有前 4 个。
+> 注：xai 和 x-ai 是同一 API 的两个别名，模型列表完全相同。
 
 ### 4.2 volcengine-plan 模型
+
+**程一（main）— 9 个模型：**
 
 | 模型 ID | 上下文 | 输出 | 输入 |
 |---------|--------|------|------|
@@ -243,9 +245,20 @@
 | minimax-latest | 200K | 128K | text |
 | kimi-k2.6 | 256K | 32K | text, image |
 
-### 4.3 xai 模型（Grok 系列）
+**程二（finance）— 6 个模型：**
 
-xai 和 x-ai 两个 provider 模型列表相同。
+| 模型 ID | 上下文 | 输出 | 输入 |
+|---------|--------|------|------|
+| ark-code-latest | 256K | 4K | text |
+| doubao-seed-code | 256K | 4K | text |
+| glm-4.7 | 200K | 4K | text |
+| kimi-k2-thinking | 256K | 4K | text |
+| kimi-k2.5 | 256K | 4K | text |
+| doubao-seed-code-preview-251028 | 256K | 4K | text |
+
+### 4.3 xai / x-ai 模型（Grok 系列）
+
+两个 provider 模型列表相同，程一和程二共享。
 
 | 模型 ID | 上下文 | 输出 | 推理 | 输入 |
 |---------|--------|------|------|------|
@@ -266,32 +279,36 @@ xai 和 x-ai 两个 provider 模型列表相同。
 
 ### 4.4 volcengine 模型（标准 API）
 
-| 模型 ID | 上下文 | 输出 |
-|---------|--------|------|
-| doubao-seed-code-preview-251028 | - | - |
-| doubao-seed-1-8-251228 | - | - |
-| kimi-k2-5-260127 | - | - |
-| glm-4-7-251222 | - | - |
-| deepseek-v3-2-251201 | - | - |
+程一和程二共享，5 个模型：
+
+| 模型 ID | 上下文 | 输出 | 输入 |
+|---------|--------|------|------|
+| doubao-seed-code-preview-251028 | 256K | 4K | text, image |
+| doubao-seed-1-8-251228 | 256K | 4K | text, image |
+| kimi-k2-5-260127 | 256K | 4K | text, image |
+| glm-4-7-251222 | 200K | 4K | text, image |
+| deepseek-v3-2-251201 | 128K | 4K | text, image |
 
 ### 4.5 deepseek 模型（官方 API）
 
-| 模型 ID | 上下文 | 输出 | 说明 |
+仅程一（main）配置，1 个模型：
+
+| 模型 ID | 上下文 | 输出 | 输入 |
 |---------|--------|------|------|
-| deepseek-v4-pro | - | - | DeepSeek V4 Pro（仅 main agent） |
+| deepseek-v4-pro | 128K | 32K | text, image |
 
 ### 4.6 当前模型分配
 
 | Agent | 默认模型 | 说明 |
 |-------|---------|------|
 | main (程一) | volcengine-plan/ark-code-latest | 继承 agents.defaults |
-| finance (程二) | volcengine-plan/glm-5.1 | 单独配置，覆盖默认值 |
+| finance (程二) | volcengine-plan/glm-4.7 | 单独配置，覆盖默认值 |
 
 ### 4.7 模型切换方法
 
 1. 编辑 `openclaw.json`，修改 `agents.defaults.model.primary`
-2. 重启 gateway：`systemctl --user restart openclaw-gateway`
-3. 验证：`journalctl --user -u openclaw-gateway -n 20`
+2. 重启 gateway：`openclaw gateway restart --force`
+3. 验证：`systemctl --user status openclaw-gateway`
 
 ---
 
