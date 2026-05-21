@@ -427,12 +427,12 @@ openclaw setup --wizard    # 运行向导检查兼容性
 - **模型 Provider**：https://docs.openclaw.ai/providers/index
 - **火山引擎 Provider**：https://docs.openclaw.ai/providers/volcengine
 - **多 Agent 路由**：https://docs.openclaw.ai/concepts/multi-agent
-- **Agent 工作空间**：https://docs.openclaw.ai/concepts/agent-workspace.md
-- **会话管理**：https://docs.openclaw.ai/concepts/session.md
-- **SOUL.md 人格指南**：https://docs.openclaw.ai/concepts/soul.md
-- **记忆系统**：https://docs.openclaw.ai/concepts/memory.md
-- **定时任务**：https://docs.openclaw.ai/automation/cron-jobs.md
-- **CLI 命令参考**：https://docs.openclaw.ai/cli/index.md
+- **Agent 工作空间**：https://docs.openclaw.ai/concepts/agent-workspace
+- **会话管理**：https://docs.openclaw.ai/concepts/session
+- **SOUL.md 人格指南**：https://docs.openclaw.ai/concepts/soul
+- **记忆系统**：https://docs.openclaw.ai/concepts/memory
+- **定时任务**：https://docs.openclaw.ai/automation/cron-jobs
+- **CLI 命令参考**：https://docs.openclaw.ai/cli/index
 
 ---
 
