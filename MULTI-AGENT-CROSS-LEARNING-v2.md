@@ -956,8 +956,8 @@ done
 ```
 
 **配置要点**：
-- `tools.agentToAgent`（**新增字段，待验证**）：enabled + allow 控制哪些 Agent 可以发起 A2A 通信。当前 openclaw.json 中尚无此字段，需确认平台版本是否支持
-- `session.agentToAgent`（**新增字段，待验证**）：maxPingPongTurns 设为 0，禁用自动乒乓，本方案使用 Coordinator 手动编排。同上，需确认平台支持
+- `tools.agentToAgent`（**新增字段，已验证平台支持**）：enabled + allow 控制哪些 Agent 可以发起 A2A 通信。官方文档示例见 https://docs.openclaw.ai/concepts/multi-agent
+- `session.agentToAgent`（**新增字段，已验证平台支持**）：maxPingPongTurns 设为 0（范围 0-20，默认 5），禁用自动乒乓，本方案使用 Coordinator 手动编排。官方文档说明见 https://docs.openclaw.ai/concepts/session-tool
 - main 和 finance 不在 allow 列表中，它们不参与 Review 流程
 - 新增飞书账户均显式设置 `requireMention: false`，与现有 finance 账户写法一致
 - 现有 `messages.groupChat.visibleReplies: "message_tool"` 保持不变，确保 Agent 在群聊中必须调用 message 工具才能发布可见回复（与方案一致）
