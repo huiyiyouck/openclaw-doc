@@ -25,9 +25,7 @@
 /root/.openclaw/
 ├── openclaw.json              # 主配置文件（唯一配置源）
 ├── openclaw.json.last-good    # 最近一次正常配置备份
-├── docs/                      # 文档（本手册）
-├── doc/                       # 官方参考文档
-│   └── openclaw-reference.md
+├── docs/                      # 文档（本手册 + 配置参考 + 多Agent方案）
 ├── agents/                    # Agent 定义目录
 │   ├── main/
 │   │   ├── agent/             # main agent 配置
@@ -569,7 +567,7 @@ tar czf /root/openclaw-backup-$(date +%Y%m%d).tar.gz \
   .openclaw/memory/ \
   .openclaw/wiki/ \
   .openclaw/credentials/ \
-  .openclaw/doc/ \
+  .openclaw/docs/ \
   .config/systemd/user/openclaw-gateway.service
 ```
 

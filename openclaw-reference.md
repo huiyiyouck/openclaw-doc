@@ -22,12 +22,11 @@
 ├── docs/                      # 项目文档
 │   ├── MAINTENANCE.md         #   运维手册
 │   ├── openclaw-reference.md  #   配置参考文档
-│   └── MULTI-AGENT-CROSS-LEARNING.md  # 多Agent交叉学习方案
+│   └── MULTI-AGENT-CROSS-LEARNING-v2.md  # 多Agent交叉学习方案
 ├── update-check.json          # 版本更新检查记录
 ├── agents/                    # Agent 运行时数据
 │   ├── main/                  # main agent（程一）
 │   │   ├── agent/
-│   │   │   ├── models.json    #   该 agent 可用的模型 provider 和模型列表
 │   │   │   └── auth-profiles.json  #   该 agent 的 API 认证密钥
 │   │   └── sessions/          #   会话记录（对话历史、轨迹）
 │   └── finance/               # finance agent（程二）
@@ -51,7 +50,11 @@
 ├── canvas/                    # Canvas Web UI
 ├── completions/               # Shell 自动补全脚本
 ├── logs/                      # Gateway 运行日志
-└── credentials/               # 凭证存储（创建后）
+├── credentials/               # 飞书配对凭证数据
+├── memory/                    # SQLite 记忆数据库
+├── wiki/                      # memory-wiki 数据
+├── extensions/                # 插件安装目录（如 openclaw-lark）
+└── .claude/                   # Claude Code 配置
 ```
 
 ---
@@ -247,7 +250,9 @@
       "volcengine": { "enabled": true },     // 火山引擎模型插件
       "deepseek": { "enabled": true },       // DeepSeek 模型插件
       "tavily": { "enabled": true },         // Tavily 搜索插件
-      "openclaw-lark": { "enabled": true }   // 飞书通道插件（新版）
+      "openclaw-lark": { "enabled": true },  // 飞书通道插件
+      "memory-core": { "enabled": true },    // 记忆核心插件（含 Dreaming）
+      "memory-wiki": { "enabled": true }     // 记忆 Wiki 插件
     }
   }
 }
@@ -414,14 +419,14 @@ openclaw setup --wizard    # 运行向导检查兼容性
 
 - **文档首页**：https://docs.openclaw.ai/
 - **文档索引**：https://docs.openclaw.ai/llms.txt（完整的页面列表，查资料前先看这个）
-- **配置参考**：https://docs.openclaw.ai/gateway/configuration-reference.md
-- **Agent 配置**：https://docs.openclaw.ai/gateway/config-agents.md
-- **通道配置**：https://docs.openclaw.ai/gateway/config-channels.md
-- **工具和自定义 Provider**：https://docs.openclaw.ai/gateway/config-tools.md
-- **飞书通道**：https://docs.openclaw.ai/channels/feishu.md
-- **模型 Provider**：https://docs.openclaw.ai/providers/index.md
-- **火山引擎 Provider**：https://docs.openclaw.ai/providers/volcengine.md
-- **多 Agent 路由**：https://docs.openclaw.ai/concepts/multi-agent.md
+- **配置参考**：https://docs.openclaw.ai/gateway/configuration-reference
+- **Agent 配置**：https://docs.openclaw.ai/gateway/config-agents
+- **通道配置**：https://docs.openclaw.ai/gateway/config-channels
+- **工具和自定义 Provider**：https://docs.openclaw.ai/gateway/config-tools
+- **飞书通道**：https://docs.openclaw.ai/channels/feishu
+- **模型 Provider**：https://docs.openclaw.ai/providers/index
+- **火山引擎 Provider**：https://docs.openclaw.ai/providers/volcengine
+- **多 Agent 路由**：https://docs.openclaw.ai/concepts/multi-agent
 - **Agent 工作空间**：https://docs.openclaw.ai/concepts/agent-workspace.md
 - **会话管理**：https://docs.openclaw.ai/concepts/session.md
 - **SOUL.md 人格指南**：https://docs.openclaw.ai/concepts/soul.md
